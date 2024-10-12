@@ -1,26 +1,27 @@
 const todoList = document.getElementById('todo-list');
 const todoInput = document.getElementById('todo-input');
 const todoForm = document.getElementById('todo-form');
+const aleart = document.getElementById('aleart');
 
 todoForm.addEventListener('submit', function(event) {
     event.preventDefault();
-    const aleart = document.getElementById('aleart');
     if (todoInput.value === '') {
         aleart.style.display = 'flex';
-        return
+        return;
     } else {
-        addlist();
+        addlist(todoInput.value); // Pass the input value
         todoInput.value = '';
+        savingDataToLocalStorage(); // Save to local storage
     }
-})
+});
 
-function addlist() {
+function addlist(task) {
     const list = document.createElement('div'); // Use div for block layout
     list.style.display = 'flex';
     list.style.alignItems = 'center'; // Align items center
 
     const listItem = document.createElement("li");
-    listItem.textContent = todoInput.value; // Changed innerHTML to textContent for safety
+    listItem.textContent = task; // Set list item text to the task
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -50,6 +51,7 @@ function addlist() {
     // Delete button event listener
     delete_button.addEventListener('click', () => {
         todoList.removeChild(list); // Correct way to remove the list item
+        savingDataToLocalStorage(); // Update local storage after deletion
     });
 
     // Edit button event listener
@@ -62,6 +64,7 @@ function addlist() {
             listItem.classList.remove('editing');
             edit_button.textContent = 'edit'; // Reset button text
             list.removeChild(input); // Remove input field
+            savingDataToLocalStorage(); // Update local storage after editing
         } else {
             // Start editing
             const input = document.createElement('input');
@@ -77,18 +80,16 @@ function addlist() {
 
 function savingDataToLocalStorage() {
     const tasks = [];
-    document.querySelectorall('#todo-list').array.forEach(task => {
-        const taskText = task.querySelectorall('span').textContent;
-        const isconpleted = task.classList.contains('conpleted');
-        task.push({text: taskText, completed: isconpleted});
-        localStorage.setItem('tasks', JSON.stringify(tasks));
+    document.querySelectorAll('li').forEach(li => {
+        const listText = li.textContent;
+        tasks.push(listText);
     });
+    localStorage.setItem('items', JSON.stringify(tasks)); // Save tasks to local storage
 }
 
-
 document.addEventListener('DOMContentLoaded', function() {
-    const savedTasks = JSON.parse(localStorage('tasks')) || [];
+    const savedTasks = JSON.parse(localStorage.getItem('items')) || []; // Retrieve tasks from local storage
     savedTasks.forEach(task => {
-        addTask(task.text);
-    })
-})
+        addlist(task); // Add each saved task to the list
+    });
+});
