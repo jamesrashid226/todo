@@ -77,10 +77,18 @@ function addlist() {
 
 function savingDataToLocalStorage() {
     const tasks = [];
-    document.querySelectorall('#todo-list').array.forEach(element => {
-        const taskText = task
+    document.querySelectorall('#todo-list').array.forEach(task => {
+        const taskText = task.querySelectorall('span').textContent;
+        const isconpleted = task.classList.contains('conpleted');
+        task.push({text: taskText, completed: isconpleted});
+        localStorage.setItem('tasks', JSON.stringify(tasks));
     });
 }
 
 
-
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTasks = JSON.parse(localStorage('tasks')) || [];
+    savedTasks.forEach(task => {
+        addTask(task.text);
+    })
+})
